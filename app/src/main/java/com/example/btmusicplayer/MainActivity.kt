@@ -2,6 +2,7 @@ package com.example.btmusicplayer
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothDevice
 import android.content.Context
@@ -10,11 +11,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     private lateinit var spinnerDevices: Spinner
     private lateinit var radioGroup: RadioGroup
@@ -82,7 +82,11 @@ class MainActivity : AppCompatActivity() {
             .apply()
 
         val serviceIntent = Intent(this, BluetoothService::class.java)
-        ContextCompat.startForegroundService(this, serviceIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
         Toast.makeText(this, "服務已啟動！連線至該藍牙時將自動播放", Toast.LENGTH_LONG).show()
     }
 
