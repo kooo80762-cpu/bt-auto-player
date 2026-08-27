@@ -29,7 +29,7 @@ jobs:
           gradle-version: '8.6'
 
       - name: Build APK
-        run: gradle assembleDebug --stacktrace
+        run: gradle assembleDebug --warning-mode=none
 
       - name: Prepare GitHub Pages
         run: |
