@@ -3,6 +3,7 @@ name: Build and Deploy APK
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -22,11 +23,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate Gradle Wrapper & Build APK
-        run: |
-          gradle wrapper
-          chmod +x gradlew
-          ./gradlew assembleDebug
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build with Gradle Wrapper
+        run: gradle assembleDebug
 
       - name: Prepare GitHub Pages
         run: |
