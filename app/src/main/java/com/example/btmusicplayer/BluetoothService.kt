@@ -10,7 +10,6 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.view.KeyEvent
-import androidx.core.app.NotificationCompat
 
 class BluetoothService : Service() {
 
@@ -40,11 +39,18 @@ class BluetoothService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        
+        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, CHANNEL_ID)
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+        }
+
+        val notification = builder
             .setContentTitle("藍牙自動播放運行中")
             .setContentText("等待指定藍牙裝置連線...")
             .setSmallIcon(android.R.drawable.ic_lock_silent_mode_off)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -87,12 +93,14 @@ class BluetoothService : Service() {
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "藍牙播放監聽",
-            NotificationManager.IMPORTANCE_LOW
-        )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "藍牙播放監聽",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager?.createNotificationChannel(channel)
+        }
     }
 }
